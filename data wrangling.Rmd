@@ -14,7 +14,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
+```{r}
 library(readxl)
 library(dplyr)
 library(ggplot2)
@@ -24,11 +24,11 @@ library(writexl)
 library(utils)
 ```
 
-```{r}
+```{r read file}
 MasterWide <- read_excel("~/Desktop/PSY THESIS/Study 2/data/LG_Study2_MasterWide.xlsx")
 ```
 
-```{r}
+```{r relevel numeric conversion PID}
 MasterWide <- MasterWide |>
   mutate_at(vars(contains("emo")), ~as.numeric(., na.rm = TRUE))
 
@@ -40,7 +40,7 @@ MasterWide$Country <- factor(MasterWide$Country, levels = c("US", "China", "Chil
 MasterWide$PID <- seq(from = 1, to = nrow(MasterWide))
 
 ```
-```{r}
+```{r find avg love n gratitude}
 
 MasterWide$AvgLove <- rowMeans(MasterWide[, c("emo_FC_1", "emo_IC_1", "emo_AG_1", "emo_AP_1", "emo_GI_1", "emo_PL_1")], na.rm = TRUE)
 
@@ -50,19 +50,19 @@ print(MasterWide)
  
 
 ```
-```{r}
+```{r disengaging average}
 DisPos_col <- grep("emo.*(_26|_30)", names(MasterWide), value = TRUE)
 print(DisPos_col)
 
 MasterWide$DisPos <- rowMeans(MasterWide[, DisPos_col], na.rm = TRUE)
 
 DisNeg_col <- grep("emo.*(_27|_32)", names(MasterWide), value = TRUE)
-print(DisPos_col)
+print(DisNeg_col)
 
 MasterWide$DisNeg <- rowMeans(MasterWide[, DisNeg_col], na.rm = TRUE)
 ```
 
-```{r}
+```{r engaging average}
 
 EngPos_col <- grep("emo.*(_24|_33)", names(MasterWide), value = TRUE)
 print(EngPos_col)
@@ -76,7 +76,8 @@ MasterWide$EngNeg <- rowMeans(MasterWide[, EngNeg_col], na.rm = TRUE)
 ```
 
 
-```{r}
+```{r general negative average}
+
 GenNeg_col <- grep("emo.*(_16|_18|_34)", names(MasterWide), value = TRUE)
 print(GenNeg_col)
 
@@ -84,7 +85,7 @@ MasterWide$GenNeg <- rowMeans(MasterWide[, GenNeg_col], na.rm = TRUE)
 
 ```
 
-```{r}
+```{r general positive average}
 
 GenPos_col <- grep("emo.*(_17|_19|_28)", names(MasterWide), value = TRUE)
 print(GenPos_col)
@@ -93,7 +94,8 @@ MasterWide$GenPos <- rowMeans(MasterWide[, GenPos_col], na.rm = TRUE)
 
 ```
 
-```{r}
+```{r low arousal positive average}
+
 LowPos_col <- grep("emo.*(_6|_14|_29)", names(MasterWide), value = TRUE)
 print(GenPos_col)
 
@@ -101,98 +103,93 @@ MasterWide$LowPos <- rowMeans(MasterWide[, LowPos_col], na.rm = TRUE)
 
 ```
 
-```{r}
+```{r low arousal negative average}
 LowNeg_col <- grep("emo.*(_3|_4|_21)", names(MasterWide), value = TRUE)
-print(GenPos_col)
+print(GenNeg_col)
 
 MasterWide$LowNeg <- rowMeans(MasterWide[, LowNeg_col], na.rm = TRUE)
 ```
 
-```{r}
+```{r high arousal negative average}
 HigNeg_col <- grep("emo.*(_12|_13|_15)", names(MasterWide), value = TRUE)
-print(GenPos_col)
+print(HigNeg_col)
 
 MasterWide$HigNeg <- rowMeans(MasterWide[, HigNeg_col], na.rm = TRUE)
 ```
 
-```{r}
+```{r high arousal positive average}
 HigPos_col <- grep("emo.*(_20|_22|_25)", names(MasterWide), value = TRUE)
-print(GenPos_col)
+print(HigPos_col)
 
 MasterWide$HigPos <- rowMeans(MasterWide[, HigPos_col], na.rm = TRUE)
 ```
 
-```{r}
+```{r high arousa average}
 HigArs_col <- grep("emo.*(_5|_7|_9)", names(MasterWide), value = TRUE)
-print(GenPos_col)
+print(HigArs_col)
 
 MasterWide$HigArs <- rowMeans(MasterWide[, HigArs_col], na.rm = TRUE)
 ```
 
-```{r}
+```{r low aroulsa average}
 LowArs_col <- grep("emo.*(_8|_10|_11)", names(MasterWide), value = TRUE)
 print(LowArs_col)
 
 MasterWide$LowArs <- rowMeans(MasterWide[, LowArs_col], na.rm = TRUE)
 ```
 
-```{r}
+```{r sc numeric}
+
 MasterWide <- MasterWide |>
   mutate_at(vars(contains("SC")), ~as.numeric(., na.rm = TRUE))
 
 print(MasterWide)
 ```
 
-```{r}
-
+```{r sc calculation}
 
 MasterWide$IntSC <- rowSums(MasterWide[, c("SC_1", "SC_2", "SC_3", "SC_4", "SC_5", "SC_6", 
                                              "SC_7", "SC_8", "SC_9", "SC_10", "SC_11", "SC_12")], na.rm = TRUE)
-
 
 MasterWide$IndSC <- rowSums(MasterWide[, c("SC_13", "SC_14", "SC_15", "SC_16", "SC_17", "SC_18", 
                                              "SC_19", "SC_20", "SC_21", "SC_22", "SC_23")], na.rm = TRUE)
 
 ```
 
-```{r}
+```{r sc calculation 2}
 MasterWide$SC <- MasterWide$IndSC - MasterWide$IntSC
 ```
 
-```{r}
+```{r rm conversion}
 MasterWide <- MasterWide |>
   mutate_at(vars(contains("RM")), ~as.numeric(., na.rm = TRUE))
 
-print(MasterWide)
 ```
 
-```{r}
+```{r rm calculation}
 RM_col <- grep("RM.", names(MasterWide), value = TRUE)
 
 print(RM_col)
 
 MasterWide$RM <- rowMeans(MasterWide[, RM_col], na.rm = TRUE)
 ```
-```{r}
+```{r Tightness conversion}
 MasterWide <- MasterWide |>
   mutate_at(vars(contains("Tightness")), ~as.numeric(., na.rm = TRUE))
 
-print(MasterWide)
 ```
-```{r}
+```{r conversion calculation}
 Tightness_col <- grep("Tightness.", names(MasterWide), value = TRUE)
-
-print(Tightness_col)
 
 MasterWide$Tightness <- rowMeans(MasterWide[, Tightness_col], na.rm = TRUE)
 ```
 
 
-```{r}
+```{r final dataset}
 write.csv(MasterWide, "~/Desktop/PSY THESIS/Study 2/data/MasterWide.csv")
 ```
 
-```{r}
+```{r average emo item by country}
 emo_cols <- grep("emo_", names(MasterWide), value = TRUE)
 
 MasterWide_emo <- MasterWide %>% select(Country, all_of(emo_cols))
@@ -203,7 +200,7 @@ average_emo <- MasterWide_emo %>%
 
 print(average_emo)
 ```
-```{r}
+```{r avg emo item reformat}
 average_emo <- average_emo %>%
   pivot_longer(
     -Country, # Keep Country column as identifier
@@ -211,7 +208,6 @@ average_emo <- average_emo %>%
     values_to = "intensity"
   )
 
-# Now pivot it to the wider format where each 'emo' item is a row
 average_emo <- average_emo %>%
   pivot_wider(
     names_from = Country,
@@ -219,11 +215,11 @@ average_emo <- average_emo %>%
   )
 ```
 
-```{r}
+```{r write average emo}
 write.csv(average_emo, "~/Desktop/PSY THESIS/Study 2/data/average emo by country.csv")
 ```
 
-```{r}
+```{r outlier function}
 
 
 find_outliers <- function(column) {
@@ -236,6 +232,9 @@ find_outliers <- function(column) {
 }
 
 
+```
+```{r average love gratitude outliers}
+
 outliers_AvgLove <- find_outliers(MasterWide$AvgLove)
 cat("AvgLove Outliers:", outliers_AvgLove, "\n")
 
@@ -244,6 +243,41 @@ outliers_AvgGratitude <- find_outliers(MasterWide$AvgGratitude)
 cat("AvgGratitude Outliers:", outliers_AvgGratitude, "\n")
 
 
+```
+
+```{r no average love outlier}
+
+AvgLove_outliers_list <- c(
+  46, 58, 147, 335, 338, 343, 358, 383, 384, 402, 420, 437, 443, 447
+)
+
+MasterWide_No_AvgLove_outliers <- MasterWide[!(MasterWide$PID %in% AvgLove_outliers_list), ]
+
+print(MasterWide_No_AvgLove_outliers)
+```
+
+```{r write no avg love outliers}
+write.csv(MasterWide_No_AvgLove_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_AvgLove_outliers.csv")
+```
+
+```{r no avg gratitude outliers}
+
+AvgGratitude_outliers_list <- c(
+  4, 8, 46, 58, 59, 86, 121, 139, 335, 343, 349, 383, 384, 394, 417, 435, 443 
+)
+
+
+MasterWide_No_AvgGratitude_outliers <- MasterWide[!(MasterWide$PID %in% AvgGratitude_outliers_list), ]
+
+print(MasterWide_No_AvgGratitude_outliers)
+```
+
+```{r write no gratitude outliers}
+write.csv(MasterWide_No_AvgGratitude_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_AvgGratitude_outliers.csv")
+
+```
+
+```{r average social oritentation outliers }
 outliers_DisPos <- find_outliers(MasterWide$DisPos)
 cat("DisPos Outliers:", outliers_DisPos, "\n")
 
@@ -255,10 +289,10 @@ cat("EngPos Outliers:", outliers_EngPos, "\n")
 
 outliers_EngNeg <- find_outliers(MasterWide$EngNeg)
 cat("EngNeg Outliers:", outliers_EngNeg, "\n")
-
 ```
 
-```{r}
+```{r exclude social orientation outiers}
+
 SocOriVal_outliers <- c(
   8, 46, 56, 59, 100, 104, 121, 227, 338, 343, 360, 372, 383, 384, 394, 407, 420, 443, 447,
   3, 13, 57, 79, 140, 142, 145, 154, 163, 291, 322, 324, 330, 333, 349, 366, 376, 390, 410, 413, 420, 438,
@@ -271,47 +305,14 @@ SocOriVal_outliers <- unique(SocOriVal_outliers)
 
 MasterWide_No_SocOriVal_outliers <- MasterWide[!(MasterWide$PID %in% SocOriVal_outliers), ]
 
-print(MasterWide_No_SocOriVal_outliers)
 
 ```
-```{r}
+```{r write with no social orientation outliers}
 write.csv(MasterWide_No_SocOriVal_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_SocOriVal_outliers.csv")
 ```
 
-```{r}
 
-AvgLove_outliers_list <- c(
-  46, 58, 147, 335, 338, 343, 358, 383, 384, 402, 420, 437, 443, 447
-)
-
-
-MasterWide_No_AvgLove_outliers <- MasterWide[!(MasterWide$PID %in% AvgLove_outliers_list), ]
-
-print(MasterWide_No_AvgLove_outliers)
-
-
-```
-
-```{r}
-write.csv(MasterWide_No_AvgLove_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_AvgLove_outliers.csv")
-```
-
-```{r}
-
-AvgGratitude_outliers_list <- c(
-  4, 8, 46, 58, 59, 86, 121, 139, 335, 343, 349, 383, 384, 394, 417, 435, 443 
-)
-
-
-MasterWide_No_AvgGratitude_outliers <- MasterWide[!(MasterWide$PID %in% AvgGratitude_outliers_list), ]
-
-print(MasterWide_No_AvgGratitude_outliers)
-```
-```{r}
-write.csv(MasterWide_No_AvgGratitude_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_AvgGratitude_outliers.csv")
-```
-
-```{r}
+```{r IC love gratitude outliers}
 
 outliers_ICLove <- find_outliers(MasterWide$emo_IC_1)
 cat("ICLove Outliers:", outliers_ICLove, "\n")
@@ -321,7 +322,7 @@ cat("ICGratitude Outliers:", outliers_ICGratitude, "\n")
 
 ```
 
-```{r}
+```{r remove IC outliers}
 
 IC_outliers <- c(
   4, 9, 15, 21, 30, 34, 37, 39, 41, 46, 54, 58, 69, 71, 73, 104, 114, 115, 119, 125, 129, 148, 318, 335, 340, 343, 379, 384, 402, 403, 404, 406, 415, 417, 423, 435, 437, 438, 439, 443, 450, 453, 455, 456, 4, 8, 9, 15, 16, 30, 31, 34, 46, 54, 58, 59, 61, 69, 71, 73, 79, 97, 108, 114, 115, 119, 123, 125, 129, 139, 252, 253, 295, 318, 335, 338, 383, 384, 403, 406, 415, 417, 435, 439, 440, 443, 447, 456 
@@ -332,14 +333,13 @@ IC_outliers <- unique(IC_outliers)
 
 MasterWide_No_IC_outliers <- MasterWide[!(MasterWide$PID %in% IC_outliers), ]
 
-print(MasterWide_No_IC_outliers)
 ```
 
-```{r}
+```{r write no IC outliers}
 write.csv(MasterWide_No_IC_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_IC_outliers.csv")
 ```
 
-```{r}
+```{r FC love gratitude outliers}
 outliers_FCLove <- find_outliers(MasterWide$emo_FC_1)
 cat("FCLove Outliers:", outliers_FCLove, "\n")
 
@@ -347,24 +347,21 @@ outliers_FCGratitude <- find_outliers(MasterWide$emo_FC_2)
 cat("FCGratitude Outliers:", outliers_FCGratitude, "\n")
 ```
 
-```{r}
+```{r remove FC outliers}
 FC_outliers <- c(
   13, 33, 46, 67, 107, 123, 124, 140, 147, 295, 321, 335, 338, 343, 366, 379, 383, 384, 402, 420, 422, 443, 447, 1, 2, 13, 33, 46, 67, 86, 107, 121, 123, 125, 139, 140, 305, 316, 324, 332, 335, 337, 338, 343, 348, 349, 367, 379, 383, 384, 388, 394, 396, 417, 420, 422, 435, 443, 447 
 )
 
 FC_outliers <- unique(FC_outliers)
 
-
 MasterWide_No_FC_outliers <- MasterWide[!(MasterWide$PID %in% FC_outliers), ]
 
-print(MasterWide_No_FC_outliers)
-
 ```
-```{r}
+```{r write no FC outliers}
 write.csv(MasterWide_No_FC_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_FC_outliers.csv")
 ```
 
-```{r}
+```{r PL love gratitude outliers}
 outliers_PLLove <- find_outliers(MasterWide$emo_PL_1)
 cat("PLLove Outliers:", outliers_PLLove, "\n")
 
@@ -374,32 +371,31 @@ cat("PLGratitude Outliers:", outliers_PLGratitude, "\n")
 #no outliers???
 ```
 
-```{r}
+```{r GI love gratitude outliers}
 outliers_GILove <- find_outliers(MasterWide$emo_GI_1)
 cat("GILove Outliers:", outliers_GILove, "\n")
 
 outliers_GIGratitude <- find_outliers(MasterWide$emo_GI_2 )
 cat("GIGratitude Outliers:", outliers_GIGratitude, "\n")
 
-
 ```
 
-```{r}
+```{r remove GI outliers}
 GI_outliers <- c(
   2, 4, 5, 8, 9, 34, 58, 59, 61, 62, 82, 86, 113, 116, 120, 121, 139, 142, 153, 252, 321, 329, 349, 360, 375, 376, 383, 396, 418, 420, 431, 443
 )
-
 
 MasterWide_No_GI_outliers <- MasterWide[!(MasterWide$PID %in% GI_outliers), ]
 
 print(MasterWide_No_GI_outliers)
 ```
 
-```{r}
+```{r write no GI outliers}
 write.csv(MasterWide_No_GI_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_GI_outliers.csv")
 ```
 
-```{r}
+```{r AG love gratitude outliers}
+
 outliers_AGLove <- find_outliers(MasterWide$emo_AG_1)
 cat("AGLove Outliers:", outliers_AGLove, "\n")
 
@@ -407,7 +403,7 @@ outliers_AGGratitude <- find_outliers(MasterWide$emo_AG_2 )
 cat("AGGratitude Outliers:", outliers_AGGratitude, "\n")
 
 ```
-```{r}
+```{r remove AG outliers}
 AG_outliers <- c(
  3, 34, 58, 86, 114, 121, 139, 140, 154, 321, 335, 340, 349, 384, 396, 417 
 )
@@ -417,18 +413,18 @@ MasterWide_No_AG_outliers <- MasterWide[!(MasterWide$PID %in% AG_outliers), ]
 print(MasterWide_No_AG_outliers)
 ```
 
-```{r}
+```{r write no AG outliers}
 write.csv(MasterWide_No_AG_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_AG_outliers.csv")
 ```
 
-```{r}
+```{r AP love gratitude outliers}
 outliers_APLove <- find_outliers(MasterWide$emo_AP_1)
 cat("APLove Outliers:", outliers_APLove, "\n")
 
 outliers_APGratitude <- find_outliers(MasterWide$emo_AP_2 )
 cat("APGratitude Outliers:", outliers_APGratitude, "\n")
 ```
-```{r}
+```{r remove AP outliers}
 AP_outliers <- c(
  1, 4, 7, 8, 9, 15, 16, 17, 46, 59, 75, 81, 88, 94, 104, 113, 121, 131, 139, 148, 321, 326, 335, 336, 337, 343, 346, 361, 366, 367, 368, 372, 378, 384, 394, 403, 430, 435 
 )
@@ -437,35 +433,33 @@ MasterWide_No_AP_outliers <- MasterWide[!(MasterWide$PID %in% AP_outliers), ]
 
 print(MasterWide_No_AP_outliers)
 ```
-```{r}
+```{r write no AP outliers}
 write.csv(MasterWide_No_AP_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_AP_outliers.csv")
 ```
 
-```{r}
+```{r general valence outiers}
 outliers_GenNeg <- find_outliers(MasterWide$GenNeg)
 cat("GenNeg Outliers:", outliers_GenNeg, "\n")
 
 outliers_GenPos <- find_outliers(MasterWide$GenPos)
 cat("GenPos Outliers:", outliers_GenPos, "\n")
 ```
-```{r}
+```{r remove general valence outliers}
 Valence_outliers <- c(
   3, 5, 13, 34, 49, 72, 77, 79, 140, 142, 145, 154, 155, 163, 241, 254, 315, 330, 349, 366, 390, 413, 420, 438, 442, 444, 4, 8, 46, 58, 121, 324, 335, 338, 343, 349, 381, 383, 384, 394, 403, 420, 443, 447
 )
 
 Valence_outliers <- unique(Valence_outliers)
 
-
 MasterWide_No_Valence_outliers <- MasterWide[!(MasterWide$PID %in% Valence_outliers), ]
 
-print(MasterWide_No_Valence_outliers)
 ```
 
-```{r}
+```{r write no general valence outliers}
 write.csv(MasterWide_No_Valence_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_Valence_outliers.csv")
 ```
 
-```{r}
+```{r valence and arousal outliers}
 outliers_LowPos <- find_outliers(MasterWide$LowPos)
 cat("LowPos Outliers:", outliers_LowPos, "\n")
 
@@ -478,7 +472,7 @@ cat("HigPos Outliers:", outliers_HigPos, "\n")
 outliers_HigNeg <- find_outliers(MasterWide$HigNeg)
 cat("HigNeg Outliers:", outliers_HigNeg, "\n")
 ```
-```{r}
+```{r remove valence n aroulsa outliers}
 Arousal_outliers <- c(
   3, 46, 51, 58, 59, 78, 104, 121, 150, 165, 167, 168, 169, 172, 174, 316, 335, 343, 344, 349, 369, 383, 384, 394, 400, 
    8, 77, 79, 142, 145, 154, 163, 187, 315, 322, 330, 344, 394, 413, 
@@ -488,12 +482,10 @@ Arousal_outliers <- c(
 
 Arousal_outliers <- unique(Arousal_outliers)
 
-
 MasterWide_No_Arousal_outliers <- MasterWide[!(MasterWide$PID %in% Arousal_outliers), ]
 
-print(MasterWide_No_Arousal_outliers)
 ```
-```{r}
+```{r write no valence n arousal outliers}
 write.csv(MasterWide_No_Arousal_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_Aro_outliers.csv")
 ```
 
