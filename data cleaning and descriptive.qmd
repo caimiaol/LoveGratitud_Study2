@@ -1,0 +1,60 @@
+---
+title: "Data Cleaning and Descriptive"
+format: html
+editor: visual
+---v
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+#| message: False
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(rstatix)
+library(writexl)
+```
+
+You can add options to executable code like this
+
+```{r}
+Prolific_English_approved <- read_excel("~/Desktop/PSY THESIS/Study 2/data/Prolific_English_approved.xlsx")
+
+Study2_English_Raw <- read_excel("~/Desktop/PSY THESIS/Study 2/data/Study2_English_Raw.xlsx")
+
+```
+
+```{r}
+Study2_English <- Study2_English_Raw[Study2_English_Raw$PROLIFIC_PID %in% Prolific_English_approved$`Participant id`, ]
+```
+
+```{r}
+
+rows_not_included <- Study2_English_Raw[!Study2_English_Raw$PROLIFIC_PID %in% Prolific_English_approved$`Participant id`, ]
+
+rows_to_add <- rows_not_included[!is.na(rows_not_included$PROLIFIC_PID), ]
+
+Study2_English <- rbind(Study2_English, rows_to_add)
+
+Study2_English <- Study2_English[Study2_English$PROLIFIC_PID != '61df1ddd8eefcab4eebc65a6', ]
+
+Study2_English <- Study2_English[Study2_English$PROLIFIC_PID != 'PROLIFIC_PID', ]
+```
+
+```{r}
+write_xlsx(Study2_English, "~/Desktop/PSY THESIS/Study 2/data/Study2_English.xlsx")
+```
+
+```{r}
+
+```
+
+
