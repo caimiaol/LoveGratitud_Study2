@@ -184,6 +184,15 @@ Tightness_col <- grep("Tightness.", names(MasterWide), value = TRUE)
 MasterWide$Tightness <- rowMeans(MasterWide[, Tightness_col], na.rm = TRUE)
 ```
 
+```{r social orientation diff score}
+MasterWide <- MasterWide |>
+  mutate(SocOriPos = DisPos - EngPos)
+
+MasterWide <- MasterWide |>
+  mutate(SocOriNeg = DisNeg - EngNeg)
+
+```
+
 
 ```{r final dataset}
 write.csv(MasterWide, "~/Desktop/PSY THESIS/Study 2/data/MasterWide.csv")

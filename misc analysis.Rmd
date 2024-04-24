@@ -1,0 +1,42 @@
+---
+title: "misc analysis"
+output: html_document
+date: "2024-04-24"
+---
+
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(rstatix)
+library(writexl)
+library(utils)
+```
+
+```{r}
+Chinese <- read_excel("~/Desktop/PSY THESIS/Study 2/data/LG_Study2_Chinese.xlsx")
+```
+```{r}
+Chinese <- Chinese |>
+  mutate_at(vars(contains("emo")), ~as.numeric(., na.rm = TRUE))
+
+print(Chinese)
+```
+
+```{r}
+Chinese$AP <- as.factor(Chinese$AP)
+
+```
+
+```{r}
+Chinese |>
+  group_by(AP)|>
+  summarise(mean = mean(emo_5_1))
+```
+```{r}
+Chinese |>
+  group_by(AP)|>
+  summarise(mean = mean(emo_5_2))
+```
+
