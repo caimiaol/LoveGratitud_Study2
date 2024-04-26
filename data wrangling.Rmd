@@ -242,6 +242,7 @@ find_outliers <- function(column) {
 
 
 ```
+
 ```{r average love gratitude outliers}
 
 outliers_AvgLove <- find_outliers(MasterWide$AvgLove)
@@ -316,6 +317,16 @@ MasterWide_No_SocOriVal_outliers <- MasterWide[!(MasterWide$PID %in% SocOriVal_o
 
 
 ```
+
+```{r}
+MasterWide_No_SocOriVal_outliers <- MasterWide_No_SocOriVal_outliers |>
+  mutate(SocOriPos = DisPos - EngPos)
+
+MasterWide_No_SocOriVal_outliers <- MasterWide_No_SocOriVal_outliers |>
+  mutate(SocOriNeg = DisNeg - EngNeg)
+```
+
+
 ```{r write with no social orientation outliers}
 write.csv(MasterWide_No_SocOriVal_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_SocOriVal_outliers.csv")
 ```
@@ -494,7 +505,30 @@ Arousal_outliers <- unique(Arousal_outliers)
 MasterWide_No_Arousal_outliers <- MasterWide[!(MasterWide$PID %in% Arousal_outliers), ]
 
 ```
+
 ```{r write no valence n arousal outliers}
 write.csv(MasterWide_No_Arousal_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_Aro_outliers.csv")
+```
+
+```{r}
+outliers_SocOriPos <- find_outliers(MasterWide$SocOriPos)
+cat("SocOriPos Outliers:", outliers_SocOriPos, "\n")
+
+outliers_SocOriNeg <- find_outliers(MasterWide$SocOriNeg)
+cat("SocOriNeg Outliers:", outliers_HigNeg, "\n")
+```
+
+```{r}
+SocOriDiff_outliers <- c(
+  2, 18, 29, 46, 53, 71, 100, 101, 112, 132, 137, 227, 240, 325, 407, 444, 445, 3, 101, 140, 142, 145, 163, 291, 315, 322, 324, 330, 333, 366, 395, 413, 420, 444, 451 
+)
+
+SocOriDiff_outliers <- unique(SocOriDiff_outliers)
+
+MasterWide_No_SocOriDiff_outliers <- MasterWide[!(MasterWide$PID %in% SocOriDiff_outliers), ]
+```
+
+```{r}
+write.csv(MasterWide_No_SocOriDiff_outliers, "~/Desktop/PSY THESIS/Study 2/data/MasterWide_No_SocOriDiff_outliers.csv")
 ```
 
