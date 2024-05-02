@@ -12,6 +12,9 @@ library(tidyverse)
 library(rstatix)
 library(writexl)
 library(utils)
+library(lme4)
+library(ez)
+library(extrafont)
 ```
 
 ```{r}
@@ -38,5 +41,106 @@ Chinese |>
 Chinese |>
   group_by(AP)|>
   summarise(mean = mean(emo_5_2))
+```
+
+```{r}
+MasterWide_H4_1 <- MasterWide |>
+  pivot_longer(cols = c(DisPos, DisNeg, EngPos, EngNeg), names_to = "Variable", values_to = "Value") |>
+  mutate(Social_Orientation = case_when(
+    grepl("Dis", Variable) ~ "disengaging",
+    TRUE ~ "engaging"
+  ),
+  Valence = case_when(
+    grepl("Pos", Variable) ~ "Positive",
+    TRUE ~ "Negative"
+  ))
+
+```
+
+
+
+```{r}
+
+H4_1_Visual <- MasterWide_H4_1 %>%
+  group_by(Variable, Valence, Country) %>%
+  summarise(
+    Mean = mean(Value, na.rm = TRUE),
+    SD = sd(Value, na.rm = TRUE),
+    N = n(),  # Get the sample size
+    SEM = SD / sqrt(N),  # Calculate Standard Error of the Mean
+    .groups = 'drop'
+  )
+
+# Filter out impossible combinations
+H4_1_Visual <- H4_1_Visual %>%
+  filter(!(Valence == "negative" & Variable %in% c("DisPos", "EngPos")) &
+           !(Valence == "positive" & Variable %in% c("DisNeg", "EngNeg")))
+
+
+```
+
+```{r}
+ggplot_H4_1 <- ggplot(H4_1_Visual, aes(x = Variable, y = Mean, fill = Country)) +
+  geom_col(position = position_dodge(0.8), width = 0.7) +  
+  geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0.25, 
+                position = position_dodge(0.8), color = "#333333") +  
+  facet_wrap(~Valence, scales = "free_x", labeller = label_bquote(cols = .(Valence)^"")) + 
+  labs(title = "Mean Intensity of Socially Engaging vs. Disengaging Emotions",
+       x = "",
+       y = "Mean Intensity of Emotional Experience",
+       fill = "Country")  +
+  theme_minimal() +
+  scale_fill_manual(values = c("US" = "#B6D6F2", "China" = "#B6E2D2", "Chile" = "#FFC5A1")) +
+  scale_x_discrete(labels = c("DisNeg" = "Disengaging", "EngNeg" = "Engaging", 
+                              "DisPos" = "Disengaging", "EngPos" = "Engaging")) +
+  theme(text = element_text(size = 12, family = "Times New Roman"),  # Set global font to Times New Roman
+        strip.text = element_text(size = 14, face = "bold", family = "Times New Roman"), 
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, family = "Times New Roman"), legend.position = "bottom", legend.title = element_blank())
+
+
+print(ggplot_H4_1)
+
+
+```
+```{r}
+
+ggsave("H4_1_visualization.png", plot = ggplot_H4_1, width = 10, height = 6, dpi = 300)
+
+```
+
+```{r}
+ggplot_H4_1 <- ggplot(H4_1_Visual, aes(x = Variable, y = Mean, fill = Country)) +
+  geom_col(position = position_dodge(0.8), width = 0.7) +  
+  geom_errorbar(aes(ymin = Mean - SEM, ymax = Mean + SEM), width = 0.25, 
+                position = position_dodge(0.8), color = "#333333") +  
+  facet_wrap(~Valence, scales = "free_x", labeller = label_bquote(cols = .(Valence)^"")) + 
+  labs(title = "Mean Intensity of Socially Engaging vs. Disengaging Emotions",
+       x = "",
+       y = "Mean Intensity of Emotional Experience",
+       fill = "Country")  +
+  theme_minimal() +
+  scale_fill_manual(values = c("US" = "#B6D6F2", "China" = "#B6E2D2", "Chile" = "#FFC5A1")) +
+  scale_x_discrete(labels = c("DisNeg" = "Disengaging", "EngNeg" = "Engaging", 
+                              "DisPos" = "Disengaging", "EngPos" = "Engaging")) +
+  theme(text = element_text(size = 12, family = "Times New Roman"),  # Set global font to Times New Roman
+        strip.text = element_text(size = 14, face = "bold", family = "Times New Roman"), 
+        axis.text.x = element_text(size = 12, angle = 0, hjust = 0.5, vjust = 0.5, family = "Times New Roman"), legend.position = "bottom", legend.title = element_blank())
+
+```
+
+```{r}
+ggsave("H4_1_visualization.png", plot = ggplot_H4_1, width = 10, height = 6, dpi = 300)
+```
+
+
+```{r}
+H4_1_results <- ezANOVA(data = MasterWide_H4_1,
+                   dv = .(Value),
+                   wid = .(ID),
+                   within = .(Social_Orientation, Valence),
+                   between = .(Country),
+                   detailed = TRUE,
+                   type = 3)
+print(H4_1_results)
 ```
 
